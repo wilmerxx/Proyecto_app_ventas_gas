@@ -1,0 +1,7 @@
+{
+  "name": "gasg7",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
