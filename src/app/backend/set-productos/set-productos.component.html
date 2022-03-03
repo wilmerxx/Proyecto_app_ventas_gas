@@ -13,44 +13,66 @@
 <!--Contenido de los elementos de la lista de productos de gas-->
 <ion-content>
   <h3 class="subtitulo p-3 text-center encabezado">ingrese datos del producto</h3>
-  <ion-item>
-    <ion-label class="normal" position="floating">
-      Nombre:
-    </ion-label>
-    <ion-input class="normal" type="text" inputmode="text">
-    </ion-input>
-  </ion-item>
+  <div>
+    <ion-button (click)="nuevo()" class="normal" color="dark">Nuevo</ion-button>
+  </div>
 
-  <ion-item>
-    <ion-label class="normal" position="floating">
-      Precio Normal:
-    </ion-label>
-    <ion-input class="normal" type="number" inputmode="numeric">
-    </ion-input>
-  </ion-item>
+  <!--Se oculta el formulario de datos -->
+  <div *ngIf="enableNewProducto">
+    <ion-item>
+      <ion-label class="normal" position="floating">
+        Nombre:
+      </ion-label>
+      <ion-input [(ngModel)]= "newProducto.nombre" class="normal" type="text" inputmode="text">
+      </ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label class="normal" position="floating">
-      Precio reducido:
-    </ion-label>
-    <ion-input class="normal"  type="number" inputmode="numeric">
-    </ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-label class="normal" position="floating">
+        Precio Normal:
+      </ion-label>
+      <ion-input [(ngModel)]= "newProducto.precioNormal" class="normal" type="number" inputmode="numeric">
+      </ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label class="normal" >
-      Foto:
-    </ion-label>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon slot="icon-only" name="images-sharp"></ion-icon>
+    <ion-item>
+      <ion-label class="normal" position="floating">
+        Precio reducido:
+      </ion-label>
+      <ion-input [(ngModel)]= "newProducto.precioReducido"  class="normal"  type="number" inputmode="numeric">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label class="normal" >
+        Foto:
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="images-sharp"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+
+
+    </ion-item>
+
+    <ion-button expand="full" class="btn-primary m-3" (click) = "guardarProducto()">
+      Guardar
+    </ion-button>
+  </div>
+  <!--Mostrar producto-->
+  <ion-item *ngFor="let producto of productos">
+    <ion-label class="normal">{{producto.nombre}}</ion-label>
+    <ion-button slot="end">
+      <ion-button (click)="newProducto = producto; enableNewProducto = true;">
+      <ion-icon slot="icon-only" name="create-sharp"> </ion-icon>
       </ion-button>
-    </ion-buttons>
-
-
+      <ion-button (click)="elimiarProducto(producto)">
+        <ion-icon slot="icon-only" color="danger" name="trash-bin"> </ion-icon>
+        </ion-button>
+    </ion-button>
   </ion-item>
 
-  <ion-button expand="full" class="btn-primary m-3">
-    Guardar
-  </ion-button>
+
+
 </ion-content>
