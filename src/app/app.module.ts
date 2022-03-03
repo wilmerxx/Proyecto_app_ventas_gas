@@ -5,6 +5,7 @@ import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 
 
 import { AppComponent } from './app.component';
@@ -23,7 +24,8 @@ import { environment } from 'src/environments/environment';
   PagesModule,
   BackendModule,
   AngularFireModule.initializeApp(environment.firebaseConfig),
-  AngularFirestoreModule
+  AngularFirestoreModule,
+  AngularFireStorageModule
 ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

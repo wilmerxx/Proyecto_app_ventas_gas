@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { async } from '@firebase/util';
+import { AlertController, LoadingController, MenuController, ToastController } from '@ionic/angular';
 import { Producto } from 'src/app/models';
+import { FiestorageService } from 'src/app/services/fiestorage.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 
 @Component({
@@ -9,18 +11,31 @@ import { FirestoreService } from 'src/app/services/firestore.service';
   styleUrls: ['./set-productos.component.scss'],
 })
 export class SetProductosComponent implements OnInit {
-
+  //variables globales
   productos: Producto[] = [];
 
   newProducto: Producto;
+
 
   enableNewProducto = false;
 
   private path = 'Producto/';
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  loading: any;
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  newImage = '';
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  newFail = '';
+
   constructor(
     public menucontroler: MenuController,
-    public firestoreService: FirestoreService) { }
+    public firestoreService: FirestoreService,
+    public loadingController: LoadingController,
+    public toastController: ToastController,
+    public alertController: AlertController,
+    public fiestorageService: FiestorageService
+    ) { }
 
   ngOnInit() {
     this.getProductos();
@@ -31,10 +46,18 @@ export class SetProductosComponent implements OnInit {
     this.menucontroler.toggle('principal');
   }
 
-  guardarProducto(){
-
-    const id = this.firestoreService.getId();
-    this.firestoreService.creartDoc(this.newProducto,this.path,this.newProducto.id);
+  async guardarProducto(){
+        this.presentLoading();
+        const path = 'Productos';
+        const name = this.newProducto.nombre;
+        const res = await this.fiestorageService.uploadImag(this.newFail,path,name);
+        this.newProducto.foto = res;
+        this.firestoreService.creartDoc(this.newProducto,this.path,this.newProducto.id).then( () =>{
+          this.loading.dismiss();
+          this.presentToast('Guardo con exito...');
+        }).catch(erro => {
+          this.presentToast('No se pudo guardar');
+        });
   }
 
   getProductos(){
@@ -42,8 +65,37 @@ export class SetProductosComponent implements OnInit {
        this.productos = res;
     });
   }
-  elimiarProducto(producto: Producto){
-    this.firestoreService.deleteDoc(this.path,producto.id);
+ async elimiarProducto(producto: Producto){
+        const alert = await this.alertController.create({
+        cssClass: 'normal',
+        header: 'Advertencia',
+        message: 'Seguro que desea <strong>eliminar</strong> este producto',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'normal',
+            handler: (blah) => {
+              console.log('Confirm Cancel: blah');
+            }
+          }, {
+            text: 'Okay',
+            id: 'confirm-button',
+            handler: () => {
+              console.log('Confirm Okay');
+              this.firestoreService.deleteDoc(this.path,producto.id).then(res =>{
+                 this.presentToast('Eiminado con exito...');
+                 this.alertController.dismiss();
+                }).catch(erro => {
+                this.presentToast('No se pudo Eliminar');
+                });
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+
   }
 
   nuevo(){
@@ -56,6 +108,41 @@ export class SetProductosComponent implements OnInit {
       id: this.firestoreService.getId(),
       fecha: new Date()
     };
+  }
+
+  //loading efecto para cuando esta cargando
+  async presentLoading() {
+    this.loading = await this.loadingController.create({
+      cssClass: 'normal',
+      message: 'Se esta guardadndo...',
+    });
+    await this.loading.present();
+
+    //const { role, data } = await loading.onDidDismiss();
+    //console.log('Loading dismissed!');
+  }
+  async presentToast(msg) {
+    const toast = await this.toastController.create({
+      cssClass: 'normal',
+      message: msg,
+      duration: 2000,
+      color: 'light'
+    });
+    toast.present();
+  }
+
+  async newImageload(event: any){
+
+   if (event.target.files && event.target.files[0]) {
+      this.newFail = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = ((image) => {
+        this.newImage = image.target.result as string;
+
+      });
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
   }
 
 }
