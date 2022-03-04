@@ -26,7 +26,7 @@ export class SetProductosComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   newImage = '';
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  newFail = '';
+  newFail: any;
 
   constructor(
     public menucontroler: MenuController,
@@ -50,9 +50,12 @@ export class SetProductosComponent implements OnInit {
         this.presentLoading();
         const path = 'Productos';
         const name = this.newProducto.nombre;
-        const res = await this.fiestorageService.uploadImag(this.newFail,path,name);
-        this.newProducto.foto = res;
-        this.firestoreService.creartDoc(this.newProducto,this.path,this.newProducto.id).then( () =>{
+        if (this.newFail !== undefined ) {
+          const res = await this.fiestorageService.uploadImag(this.newFail, path, name);
+          this.newProducto.foto = res;
+        }
+
+        this.firestoreService.creartDoc(this.newProducto, this.path, this.newProducto.id).then( res =>{
           this.loading.dismiss();
           this.presentToast('Guardo con exito...');
         }).catch(erro => {
@@ -104,7 +107,7 @@ export class SetProductosComponent implements OnInit {
       nombre: '',
       precioNormal: null,
       precioReducido: null,
-      foto: '',
+      foto: 'htt',
       id: this.firestoreService.getId(),
       fecha: new Date()
     };
@@ -137,8 +140,7 @@ export class SetProductosComponent implements OnInit {
       this.newFail = event.target.files[0];
       const reader = new FileReader();
       reader.onload = ((image) => {
-        this.newImage = image.target.result as string;
-
+        this.newProducto.foto = image.target.result as string;
       });
       reader.readAsDataURL(event.target.files[0]);
     }

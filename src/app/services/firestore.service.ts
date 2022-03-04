@@ -14,8 +14,9 @@ export class FirestoreService {
   }
 
   //funcion para leer el documento trabaja con rutas
-  getDoc(path: string, id: string){
-    const collection = this.database.collection(path);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  getDoc<tipo>(path: string, id: string){
+    const collection = this.database.collection<tipo>(path);
     return collection.doc(id).valueChanges();
   }
   //eliminar el documento
@@ -29,10 +30,12 @@ export class FirestoreService {
     return collection.doc(id).update(data);
   }
 
+  //retornar el id
   getId(){
     return this.database.createId();
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   getColleccion<tipo>(path: string){
     const collection = this.database.collection<tipo>(path);
     return collection.valueChanges();
