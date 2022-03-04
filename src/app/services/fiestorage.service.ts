@@ -9,9 +9,8 @@ export class FiestorageService {
 
   constructor(public storage: AngularFireStorage) { }
 
-  uploadImag(file: any,path: string, nombre: string): Promise<string>{
+  uploadImag(file: any, path: string, nombre: string): Promise<string>{
     return new Promise( resolve =>{
-
     const filePath = path + '/' + nombre;
     const ref = this.storage.ref(filePath);
     const task = ref.put(file);
@@ -24,8 +23,6 @@ export class FiestorageService {
         });
       })
     ).subscribe();
-    resolve('este es el enlace');
-
     });
   }
 }
